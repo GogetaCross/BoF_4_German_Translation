@@ -1,0 +1,172 @@
+# rect_tuner.txt - saved by the in-game Rect Tuner (F10).
+# Universal grammar (same as rect_widths.txt); read by rect_fix/rect_tuner.
+#
+# ==================== HOW A LINE WORKS ====================
+# This file re-skins GRAPHICS (textured rects). rect_widths.txt is for box/cursor
+# widening+shifting only. F5 reloads BOTH live. First matching line wins per rect.
+#
+# A "# DAT.DAT (w A->B) [broad/persistent]" line is an auto-note the F10 tuner
+# writes: source DAT + width A->B. [broad/persistent] = matched by u/v alone (no
+# sig), so it applies to that atlas graphic EVERYWHERE it's drawn (all scenes/DATs).
+#
+# Each non-# line = ONE override:  <MATCH fields> <REWRITE fields>
+#   MATCH (which rect to grab):
+#     u= v=    atlas SOURCE pixel the game samples (the identity of the graphic)
+#     clut=    palette id (use to tell two rects at the same u/v apart)
+#     ow=      ORIGINAL on-screen width (further disambiguates same u/v)
+#     sig=     exact draw-site signature (scopes to ONE instance, not broad)
+#     mx= my=  only match when drawn at this on-screen x/y (per-instance)
+#   REWRITE (what to change):
+#     w= h=    new on-screen size. NOTE: PSX 0x64 rects DON'T scale — w just sets
+#              how many texels are SAMPLED, so smaller w CROPS the right edge;
+#              w=0 = hide it. h likewise crops vertically.
+#     nu= nv=  RE-POINT to a different atlas source (sample your German art from
+#              elsewhere on the sheet, e.g. a repainted region)
+#     dx= dy=  relative screen NUDGE (+dx = right, +dy = down)
+#     x= y=    absolute screen position (prefer dx/dy for animated sprites)
+#
+# Worked examples (the fishing lines below):
+#   u=168 v=224 clut=0x7E0B ow=8 w=0 dx=7
+#       -> grab the 8px sprite at atlas (168,224); w=0 HIDES it (+7px moot).
+#   u=0 v=96 clut=0x7E08 ow=96 w=76
+#       -> grab the 96px sprite at (0,96); sample only 76 texels (crops right 20).
+#   u=0 v=128 clut=0x7E08 ow=160 nu=80 nv=96 w=84 h=32 dx=38
+#       -> grab the 160px sprite at (0,128); instead sample your art at (80,96),
+#          draw it 84x32, and shift 38px right.  (= the Fang!/Daneben! fix)
+# =========================================================
+# DEMO2.DAT  (w 48->48)
+sig=0xCDED6008 u=0 v=104 clut=0x3C44 ow=48 dx=-5
+# DEMO2.DAT  (w 188->203)
+# DEMO2.DAT  (w 188->203)  [broad/persistent]
+# DEMO2.DAT  (w 122->136)  [broad/persistent]
+u=0 v=24 clut=0x7CC0 ow=122 w=136 dx=-11
+# DEMO2.DAT  (w 158->180)  [broad/persistent]
+u=0 v=48 clut=0x7CC0 ow=158 w=180
+# DEMO2.DAT  (w 158->180)  [broad/persistent]
+u=0 v=168 clut=0x7CC0 ow=158 w=180
+# DEMO2.DAT  (w 170->180)  [broad/persistent]
+u=0 v=72 clut=0x7CC0 ow=170 w=180
+# DEMO2.DAT  (w 170->180)  [broad/persistent]
+u=0 v=192 clut=0x7CC0 ow=170 w=180
+# DEMO2.DAT  (w 124->150)  [broad/persistent]
+u=0 v=96 clut=0x7CC0 ow=124 w=150
+# DEMO2.DAT  (w 124->150)  [broad/persistent]
+u=124 v=96 clut=0x7CC0 ow=124 w=150 nu=0 nv=216
+# DEMO2.DAT  (w 64->64)
+# DEMO2.DAT  (w 64->64)
+# DEMO2.DAT  (w 64->64)
+# DEMO2.DAT  (w 64->64)  [broad/persistent]
+# DEMO2.DAT  (w 64->64)  [broad/persistent]
+# DEMO2.DAT  (w 64->64)  [broad/persistent]
+u=192 v=32 clut=0x7CC0 ow=64 dx=13
+# SGAMEN.DAT  (w 48->50)  [broad/persistent]
+# SGAMEN.DAT  (w 24->35)  [broad/persistent]
+u=136 v=40 clut=0x3C47 ow=24 w=35
+# SGAMEN.DAT  (w 34->39)  [broad/persistent]
+u=48 v=64 clut=0x3C47 ow=34 w=39 dx=4
+# SGAMEN.DAT  (w 32->35)  [broad/persistent]
+u=88 v=72 clut=0x3C47 ow=32 w=35
+# SGAMEN.DAT  (w 20->0)  [broad/persistent]
+u=96 v=56 clut=0x3C47 ow=20 w=0 dx=1
+# SGAMEN.DAT  (w 34->34)  [broad/persistent]
+u=48 v=72 clut=0x3C47 ow=34 dx=-16
+# SGAMEN.DAT  (w 48->45)  [broad/persistent]
+u=96 v=104 clut=0x3C45 ow=48 w=45
+# SGAMEN.DAT  (w 48->48)  [broad/persistent]
+# SGAMEN.DAT  (w 48->48)  [broad/persistent]
+# SGAMEN.DAT  (w 48->48)
+sig=0x2EB17A17 u=48 v=112 clut=0x3C45 ow=48 dx=3
+# SGAMEN.DAT  (w 48->48)
+sig=0xE7FFB52D u=48 v=112 clut=0x3C45 ow=48 dx=26
+# SAVE.DAT  (w 48->48)
+# SAVE.DAT  (w 48->48)
+sig=0x9004FBD9 u=0 v=104 clut=0x3C4D ow=48 dx=-4
+# SAVE.DAT  (w 48->48)
+sig=0x981B3078 u=0 v=104 clut=0x3C44 ow=48 dx=-4
+# SGAMENX.DAT  (w 72->81)  [broad/persistent]
+u=56 v=96 clut=0x3E00 ow=72 w=81 dx=5 nu=47
+# DEMO2.DAT  (w 48->48)
+# DEMO2.DAT  (w 48->48)
+sig=0x4C587589 u=0 v=104 clut=0x3C4D ow=48 dx=-5
+# ZBOF4.DAT  (w 188->210)
+# ZBOF4.DAT  (w 188->210)
+# ZBOF4.DAT  (w 188->210)
+# 01.DAT  (w 188->210)
+# 01.DAT  (w 188->210)  [broad/persistent]
+u=0 v=0 clut=0x7CC0 ow=188 w=210 dx=-31
+# AREAE006.DAT  (w 80->75)  [broad/persistent]
+# AREAE006.DAT  (w 80->75)
+# AREAE006.DAT  (w 80->75)  [broad/persistent]
+u=176 v=128 clut=0x7E0B ow=80 w=75 nu=158
+# AREAE006.DAT  (w 16->20)  [broad/persistent]
+u=112 v=64 clut=0x3C47 ow=16 w=20 dx=1 nu=111
+# AREAE006.DAT  (w 64->74)  [broad/persistent]
+u=96 v=120 clut=0x7DC5 ow=64 w=74 dx=-6
+# AREAE006.DAT  (w 224->253)  [broad/persistent]
+u=0 v=192 clut=0x7E08 ow=224 w=253 dx=-7
+# CAMP.DAT  (w 32->31)  [broad/persistent]
+u=88 v=40 clut=0x3C4B ow=32 w=31 dx=-2 nu=190 nv=120
+# MAG.DAT  (w 20->39)  [broad/persistent]
+u=48 v=136 clut=0x3C45 ow=20 w=39
+# SHOP.DAT  (w 32->36)  [broad/persistent]
+u=40 v=48 clut=0x3C47 ow=32 w=36
+# SHOP.DAT  (w 24->32)  [broad/persistent]
+u=144 v=24 clut=0x3C47 ow=24 w=32
+# AREAE006.DAT  (w 24->24)  [broad/persistent]
+# AREAE006.DAT  (w 24->28)  [broad/persistent]
+u=200 v=72 clut=0x3C47 ow=24 w=28 dx=-5 nu=196
+# CAMP.DAT  (w 18->25)  [broad/persistent]
+# CAMP.DAT  (w 18->24)  [broad/persistent]
+u=112 v=48 clut=0x3C47 ow=18 w=24
+# SGAMEN.DAT  (w 20->32)  [broad/persistent]
+# SGAMEN.DAT  (w 20->32)  [broad/persistent]
+# SGAMEN.DAT  (w 20->32)
+sig=0x0B730CB0 u=88 v=80 clut=0x3C47 ow=20 mx=259 my=137 w=32 dx=-7
+# SGAMEN.DAT  (w 20->33)
+sig=0x0B730CB0 u=88 v=80 clut=0x3C47 ow=20 mx=250 my=193 w=33 dx=-1
+# CAMP.DAT  (w 24->41)  [broad/persistent]
+# CAMP.DAT  (w 24->41)  [broad/persistent]
+# CAMP.DAT  (w 24->41)  [broad/persistent]
+u=112 v=24 clut=0x3C47 ow=24 w=41 nu=103
+# SHOP.DAT  (w 24->49)  [broad/persistent]
+# SHOP.DAT  (w 24->48)  [broad/persistent]
+# SHOP.DAT  (w 24->48)  [broad/persistent]
+# SHOP.DAT  (w 24->48)  [broad/persistent]
+# SHOP.DAT  (w 24->48)  [broad/persistent]
+# SHOP.DAT  (w 24->48)  [broad/persistent]
+# SHOP.DAT  (w 24->48)  [broad/persistent]
+u=144 v=32 clut=0x3C47 ow=24 w=48 nu=0 nv=96
+# SGAMEN.DAT  (w 20->24)  [broad/persistent]
+u=112 v=48 clut=0x3C47 ow=20 w=24
+# MSHOP.DAT  (w 24->33)  [broad/persistent]
+u=96 v=120 clut=0x3C45 ow=24 w=33
+# MSHOP.DAT  (w 48->28)  [broad/persistent]
+u=48 v=56 clut=0x3C45 ow=48 w=28
+# AREAE000.DAT  (w 8->0)  [broad/persistent]
+u=168 v=224 clut=0x7E0B ow=8 w=0 dx=7
+u=0 v=96 clut=0x7E08 ow=96 w=76      # fishing catch graphic: 96 -> 76 wide
+u=0 v=128 clut=0x7E08 ow=160 nu=80 nv=96 w=84 h=32 dx=38   # fishing result sprite (Fang!/Daneben!): re-point (0,128)->(80,96), 84x32, +64px right
+
+# COMMU01.DAT  (w 16->26)  [broad/persistent]
+u=16 v=72 clut=0x7EC8 ow=16 w=26 dx=-9 nu=205 nv=240
+# MSHOP.DAT  (w 32->40)  [broad/persistent]
+u=88 v=40 clut=0x3C47 ow=32 w=40
+# AREAE013.DAT  (w 80->96)  [broad/persistent]
+# AREAE013.DAT  (w 8->0)
+sig=0xA73906FF u=168 v=240 clut=0x7E0B ow=8 mx=218 my=138 w=0 nu=170
+# AREAE013.DAT  (w 8->0)
+sig=0xA73906FF u=168 v=240 clut=0x7E0B ow=8 mx=226 my=138 w=0
+# AREAE013.DAT  (w 80->96)  [broad/persistent]
+u=176 v=224 clut=0x7E0B ow=80 w=96 dx=-1 nu=160
+# SGAMEN.DAT  (w 48->51)
+# SGAMEN.DAT  (w 48->50)
+# SGAMEN.DAT  (w 48->50)  [broad/persistent]
+u=144 v=104 clut=0x3C45 ow=48 w=50 nu=142
+# SGAMEN.DAT  (w 48->48)
+sig=0xB37D5E33 u=48 v=112 clut=0x3C45 ow=48 dx=26
+# SGAMEN.DAT  (w 20->32)  [broad/persistent]
+# SGAMEN.DAT  (w 20->32)  [broad/persistent]
+# SGAMEN.DAT  (w 20->32)
+sig=0x03BA0F5D u=88 v=80 clut=0x3C47 ow=20 mx=259 my=137 w=32 dx=-11
+# SGAMEN.DAT  (w 20->32)  [broad/persistent]
+u=88 v=80 clut=0x3C47 ow=20 w=32 dx=-5

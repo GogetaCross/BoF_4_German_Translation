@@ -1,0 +1,36 @@
+# ── Build artifacts ──────────────────────────────────────────────
+build/
+dist/
+*.obj
+*.pdb
+*.lib
+*.exp
+*.ilk
+*.o
+*.a
+__pycache__/
+*.pyc
+
+# ── Downloaded / assembled at build time ─────────────────────────
+installer/inno/pyembed/
+installer/inno/payload/
+installer/inno/derived/
+installer/inno/files/
+installer/payload/
+installer/assets/
+
+# ── NEVER commit game data (copyright: Breath of Fire IV © Capcom) ─
+*.DAT
+*.bof4
+*.bsdiff
+*.srt
+BOF4.exe
+old_BOF4.exe
+DAT/
+DAT_backup/
+DAT_english/
+translations/
+text_dump/
+graphics_to_edit/
+bof4_psx/
+MOV/

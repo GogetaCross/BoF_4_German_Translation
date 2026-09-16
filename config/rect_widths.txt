@@ -1,0 +1,134 @@
+# rect_widths.txt - universal runtime un-clip (hook on BOF4!0x502070).
+# Match a textured rect by its ORIGINAL atlas source and rewrite it. Turn on
+# rect_trace + press F9 in-game to get rect_inventory.txt (every label's u/v).
+#
+# Per line:  u=N v=N [clut=0xN] [ow=N] [mx=N] [my=N]  [w=N] [h=N] [x=N] [y=N] [dx=N] [dy=N] [dw=N] [dh=N] [nu=N] [nv=N]
+#   h     = new on-screen HEIGHT (9-slice box edges/fill); dw/dh = grow w/h by delta
+#   u,v   = source to MATCH (atlas pixel coords from the inventory)
+#   clut  = optional CLUT to match (use if two labels share u,v)
+#   ow    = optional ORIGINAL width to match (further disambiguation)
+#   mx,my = optional ON-SCREEN x/y to match — splits a tile drawn at
+#           several spots (e.g. two 'pts.') into per-instance rules;
+#           put mx/my lines BEFORE a catch-all line for the same u/v
+#   w     = new on-screen width (un-clip)
+#   x,y   = optional new ABSOLUTE screen position
+#   dx,dy = optional RELATIVE nudge (dx=-4 = 4px left, dy=2 = 2px down);
+#           preferred over x/y for runtime-positioned labels
+#   nu,nv = optional new atlas source (relocate a repainted/widened graphic)
+#
+# GLOBAL directive lines (no caller=/u=): e.g. `equip_menu_shift = N` shifts the
+# whole equipment-skill "Menü" (box+labels+title+cursor) left N px. F5-live.
+#
+# COVER-THE-GAP (menu box widen): when a box border is widened, the new interior
+# strip shows the dark half-opaque scene-dim through it. Add these to the SAME
+# matched line to paint a flat panel over that strip (menu text stays on top):
+#   fillcol=0xRRGGBB  fillx=N filly=N fillw=N fillh=N  [fillsemi=1]
+#   fillsemi=1 = semi-transparent (GP0 0x62) to match a translucent box; else opaque.
+#   Tip: match a border tile of the target box (u/v + caller=/sig=), set fill* to the
+#   interior rect in screen coords, F5 to reload and nudge the numbers live.
+#
+# Example - status label 'Zenny' at u=120 v=8, EN width 29, German needs 40:
+#   u=120 v=8 w=40
+
+# --- Field command box + submenus: widen/shift at the DRAW call (nav-safe) -------
+# box_autofit hooks the 9-slice drawers (0x677B50 / 0x677E30) and rewrites the
+# pushed args per CALLER:  width=  new pixel width ;  boxx= / boxy=  new (absolute)
+# origin ;  dx= / dy=  RELATIVE nudge (dx=-30 = 30px left, dy=4 = 4px down) — the
+# easy way to shift a box/cursor since the logged x is often garbage/animated.
+# NOTE: dx/dy move the box FRAME + selection cursor only, NOT baked label text;
+# to move a menu's label text too, that's a code-level shift (e.g. the equipment-
+# skill "Menü" uses the equip_menu_shift config value, not dx here).
+# The open-counter [state+6] (which also gates input) is NEVER touched, so
+# navigation stays intact. Values below follow the German team's SGAMEN geometry
+# (box width 0x5C=92, origin x=6/7). Live-reload with F5. Tune with the rect tuner.
+#
+# MAIN command box (Objekte/Spezial/Ausrüstung/Status/Wechseln), y=44:
+caller=0x0067D01C width=92 boxx=6
+#
+# SUBMENUS (Benutzen/Sortieren/Entfernen/Wichtiges, Anlegen/Optimal/Ablegen, ...).
+# Shift left to x=7 (German) and widen the multi-item boxes so the words fit:
+caller=0x0067D20C width=75 boxx=7    # 4-item submenu (y=60)
+caller=0x0067D59C width=75 boxx=7    # 4-item submenu (y=60)
+caller=0x0067D34C width=75 boxx=7    # 3-item submenu (y=58)
+caller=0x0067D47C width=75 boxx=7    # 3-item submenu (y=58)
+caller=0x0067D89C boxx=7             # 2-item submenu (Wechseln: Normal/Kampf) — shift only
+#
+# TIME + ZENNY boxes (bottom-left, drawn by the other 9-slice drawer 0x677E30):
+caller=0x0067D9E4 width=92 boxx=6    # Time box (y=169) — widen + shift left
+caller=0x0067DB33 width=92 boxx=6    # Zenny box (y=192) — widen (low-word counter) + shift
+#
+# SUBMENU selection frames (highlight drawn by 0x6786D0). Widen to match the
+# 75-wide submenu boxes (German: box-4). Their X follows the label automatically.
+caller=0x0067D2EA width=71           # submenu sel-frame (box 0x67D20C)
+caller=0x0067D415 width=71           # submenu sel-frame (box 0x67D34C)
+caller=0x0067D53E width=71           # submenu sel-frame (box 0x67D47C)
+caller=0x0067D65C width=71           # submenu sel-frame (box 0x67D59C)
+#
+# --- FAIRY VILLAGE shop menu (confirmed) -----------------------------------------
+# SUBMENU (shop list: Objekte/Waffenladen/.../Versicherung) = box 0x4F16FD, its
+# selection cursor = 0x4F1763. Widen both to fit "Versicherung" (12 chars).
+caller=0x004F16FD width=82           # shop submenu box (stock 56) — fits "Versicherung"
+caller=0x004F1763 width=77           # shop submenu selection cursor (stock 48)
+# SORT submenu (fairy village, box_autofit 9-slice — NOT a textured rect):
+# box = 0x4F2D47 (stock 56, settled @x=224 y=48), cursor = 0x4F2DA7 (stock 48,
+# its y steps +16/item). Widen both; if the wider box clips the RIGHT screen edge
+# add `boxx=N` (absolute x) or `dx=-N` (nudge left) to the box line. Tune with F5.
+caller=0x004F2D47 width=76           # sort submenu box (stock 56) — tune with F5
+caller=0x004F2DA7 width=70           # sort submenu selection cursor (stock 48)
+# MAIN COMMAND box "Commando" = 0x4EF018 (cursor 0x4EF14E). Left at stock; enable
+# these if a translation needs it wider (tune with F5):
+#caller=0x004EF018 width=90          # Commando box (stock 72)
+#caller=0x004EF14E width=84          # Commando selection cursor (stock 69)
+#
+# --- INFO / SORT menu (top-right: Ausdauer/Wissen/Gestaltung/Alter/Aufgabe) -------
+# Its box is a TEXTURED rect (not one of box_autofit's hooked drawers), so use the
+# F10 RECT TUNER to resize it, not caller= rules. Left unfixed for now.
+#
+# --- FISHING graphics moved to rect_tuner.txt (graphics belong there; this file is
+#     box/cursor widening + shifting only). ---
+#
+# --- CAMP / TENT "Menü" box (Ausruhen/Speichern/Fähigkeit/Meister) ----------------
+# Widen CLEANLY at the drawer (box_autofit), like the command menu — the engine
+# tiles the whole 9-slice (border + fill + dark interior) at any width. Three drawer
+# callers: settled box + open/close animation. Settled caller from the tile chain
+# (0x677C9C -> 0x4B0C23). All -> width 122.
+caller=0x004B0C23 width=70          # SETTLED box drawer caller
+caller=0x004B0A16 width=70          # open animation
+caller=0x004B0DD7 width=70          # close animation
+# Selection cursor: drawn by 0x6786D0 (same drawer as the command cursor), called
+# from 0x4B0D97. arg2 = width (computed here, literal push 0x47 in the command menu);
+# box_autofit overrides arg2 regardless. width ~= box - 6.
+caller=0x004B0D97 width=64            # selection cursor — tune with F5
+#
+# --- SKILL/MASTER menu: "Aktion" box (Ansehen / Hinzufügen) -----------------------
+# 0x68xxxx menu family. Aktion box = 0x687BDE (x=16 y=60). Widen to fit Hinzufügen.
+caller=0x00687BDE width=74            # Aktion box (Ansehen/Hinzufügen) — tune with F5
+caller=0x00687CD7 width=68            # Aktion selection cursor
+# "Menü" submenu (Auflisten/Uniq): box 0x687D23 (x=68 y=70, stock 56) +20 -> 76;
+# cursor 0x687DAE (its y steps +16 = moving between items).
+caller=0x00687D23 width=66            # Menü submenu box (56 -> 76) — tune with F5
+caller=0x00687DAE width=60            # Menü submenu cursor — tune to cover Auflisten
+#
+# --- MEISTER (master) menu: "Aktion" box (Beitreten/Information/Beenden) -----------
+# Separate menu code from the skill menu. Box 0x68855C (x=16 y=44, stock 56),
+# cursor 0x6885D9 (y steps +16). ~33% wider to fit "Information".
+caller=0x0068855C width=82            # Meister Aktion box (56 -> 75) — tune with F5
+caller=0x006885D9 width=76            # Meister Aktion cursor — tune to cover Information
+#
+# --- SHOP (buy/sell/trade) menu: "Aktion" box (Kaufen/Verkaufen/Handeln/Beenden) ---
+# Box 0x683C34 (x=16 y=60, stock 56), cursor 0x683CF3 (y steps +16). +20 to fit Verkaufen.
+caller=0x00683C34 width=70            # Shop Aktion box (56 -> 76) — tune with F5
+caller=0x00683CF3 width=64            # Shop Aktion cursor — tune to cover Verkaufen
+#
+# --- EQUIPMENT-SKILL menu: "Menü" box (Benutzen / Anlegen) -------------------------
+# 0x681xxx menu family (sits left of the Ausrüstung box, which settles at x=96).
+# Box = 0x681565 (stock 48), selection cursor = 0x6819C1 (stock 40).
+#   WIDTH:  here (width=), F5-live.
+#   SHIFT:  the WHOLE block (box + Benutzen/Anlegen labels + title tab + divider +
+#           cursor) moves together via ONE value below: `equip_menu_shift`. F5-LIVE.
+#           Positive = left. (Don't use dx here for the whole-menu shift, or the
+#           box/cursor desync from the labels; dx is only for FINE cursor tweaks.)
+equip_menu_shift = 10                 # whole equip "Menü" shift, px left (0=off). F5-live.
+caller=0x00681565 width=60            # Menü box (Benutzen/Anlegen)
+caller=0x006819C1 width=54            # Menü selection cursor
+#caller=0x006819C1 width=54 dx=-2     # optional: fine-nudge ONLY the cursor (F5)

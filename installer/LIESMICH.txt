@@ -1,0 +1,116 @@
+====================================================================
+ Breath of Fire IV - Deutsche Übersetzung + wiederhergestellte Inhalte
+====================================================================
+
+Diese Modifikation übersetzt Breath of Fire IV (PC) ins Deutsche, passt die
+Schrift- und Menü-Darstellung an die deutschen Texte an und stellt Inhalte
+wieder her, die in der westlichen Fassung fehlten oder geschnitten wurden.
+
+Der Patch funktioniert mit der GOG- und der Steam-Version.
+
+
+--------------------------------------------------------------------
+ Installation
+--------------------------------------------------------------------
+
+1. Beende das Spiel, falls es läuft.
+
+2. Starte den Installer. Es gibt zwei Wege:
+
+   - Einfach:  Lege "BoF4_DE_Installieren.exe" in den Ordner, in dem
+               BOF4.exe liegt, und starte sie per Doppelklick.
+
+   - Oder:     Starte die .exe von einem beliebigen Ort. Sie findet dein
+               Spiel automatisch (Steam und GOG). Wird es nicht gefunden,
+               gib den Pfad zum Spielordner selbst an.
+
+3. Der Installer fragt, welchen Titelbildschirm du möchtest -
+   US oder Japanisch (siehe nächster Abschnitt).
+
+4. Fertig. Starte das Spiel.
+
+Beim allerersten Start öffnet sich einmalig ein kleines Einstellungs-Fenster
+und zeigt dir, mit welcher Taste du es jederzeit wieder aufrufst
+(Standard: ^ / ~ , die Taste links oben). Dort kannst du unter anderem diese
+Taste und die Turbo-Taste neu belegen sowie die Untertitel einstellen.
+
+
+--------------------------------------------------------------------
+ Titelbildschirm: US oder Japanisch
+--------------------------------------------------------------------
+
+Du kannst wählen, ob der westliche (US-) oder der japanische PC Titelbildschirm
+angezeigt wird - jeweils mit den deutschen Menütexten. Der Installer richtet
+deine Wahl vollständig ein; du musst nichts von Hand kopieren.
+
+Möchtest du später wechseln, führe den Installer einfach erneut aus und wähle
+die andere Variante.
+
+--------------------------------------------------------------------
+ Lokalisierung: 
+--------------------------------------------------------------------
+
+Es wurden sämtliche Texte und Grafiken vollständig lokalisiert und die Größe der
+Textboxen entsprechend angepasst, damit alles schön reinpasst. Hierfür hat mir die
+Gruppe Twisted Phoenix dankenswerterweise die Erlaubnis gegeben, ihre PSX Übersetzung
+zu nutzen.
+Die Gegnernamen wurden nicht übersetzt. Dies war eine bewusste Entscheidung, damit die
+gängigen US Guides auch weiterhin verwendet werden können. 
+
+--------------------------------------------------------------------
+ Enthaltene Wiederherstellungen
+--------------------------------------------------------------------
+
+- Unzensierte Szenen: In der westlichen Fassung geschnittene bzw. entschärfte
+  Szenen sind wiederhergestellt.
+
+- Dengeki-Shop: Der ursprünglich Japan-exklusive Bonusbereich (Shop + Lotterie)
+  ist zugänglich und auf Deutsch spielbar.
+
+Diese sind standardmäßig aktiv.
+Hier findet ihr mehr Infos über diese Inhalte: https://tcrf.net/Breath_of_Fire_IV
+
+--------------------------------------------------------------------
+ Zurück zur englischen Fassung
+--------------------------------------------------------------------
+
+Die Übersetzung ersetzt Spieldateien. Um zur englischen Originalfassung
+zurückzukehren, lass die Spieldateien überprüfen:
+
+   - Steam: Rechtsklick auf das Spiel -> Eigenschaften -> Installierte Dateien
+            -> Integrität der Spieldateien überprüfen
+   - GOG Galaxy: Verwalten -> Überprüfen / reparieren
+
+Alternativ das Spiel neu installieren.
+
+--------------------------------------------------------------------
+ Bugs
+--------------------------------------------------------------------
+
+Einer meiner QA-Tester hat mir mitgeteilt, dass er das Spiel nicht mehr direkt
+via Steam oder GOG Galaxy starten kann wenn die d3d9.dll im Verzeichnis liegt.
+Ich konnte den Fehler nicht ausfindig machen und daher auch nicht beheben.
+Sofern ihr auch das Problem habt, startet das Spiel bitte direkt über die exe.
+
+--------------------------------------------------------------------
+ Credits
+--------------------------------------------------------------------
+
+Mit großem Dank an alle, ohne deren Vorarbeit dies nicht möglich gewesen wäre:
+
+- Twisted Phoenix (Translations) - für die ursprüngliche PSX-Arbeit.
+
+- Navarchos, Ratty und FlamePurge - für die Wiederherstellung des Dengeki-Shops
+  (Dengeki Store Restoration) und die Grundlage der Zensur-Wiederherstellung.
+
+- Alle, die die unzensierte Fassung zurückgebracht haben.
+
+- Und alle anderen, die zu Breath of Fire IV beigetragen haben.
+
+Die deutsche PC-Fassung (Übersetzung, Schrift-/Anzeige-Anpassungen und die
+Portierung der wiederhergestellten Inhalte auf die PC-Version) baut auf dieser
+Arbeit auf.
+
+- Natürlich Capcom und das gesamte GOG-Team, welche die alte PC Version unter
+    Windows 11 überhaupt lauffähig gemacht haben!
+	
