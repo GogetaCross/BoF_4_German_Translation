@@ -4,7 +4,7 @@
 ;   Compile:  "C:\Program Files\Inno Setup 7\ISCC.exe" BoF4_DE.iss
 
 #define MyName "Breath of Fire IV - Deutsche Übersetzung"
-#define MyVer  "1.1"
+#define MyVer  "1.0.1"
 
 [Setup]
 AppName={#MyName}
@@ -103,8 +103,16 @@ begin
 end;
 
 // After the files are extracted, run the applier.
+// apply_inno.py writes its log next to the game, or to %TEMP% if that is not writable.
+function FindLog(): String;
+begin
+  Result := GamePage.Values[0] + '\BoF4_DE_Installation.log';
+  if not FileExists(Result) then Result := ExpandConstant('{%TEMP}\BoF4_DE_Installation.log');
+  if not FileExists(Result) then Result := '';
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
-var rc: Integer; title, cmd: String;
+var rc, dummy: Integer; title, cmd, logf: String;
 begin
   if CurStep = ssPostInstall then
   begin
@@ -119,10 +127,17 @@ begin
     end;
     if rc <> 0 then
     begin
+      logf := FindLog();
+      if logf = '' then logf := '(kein Log geschrieben)';
       MsgBox('Die Übersetzung konnte nicht vollständig eingespielt werden ' +
-             '(Fehlercode ' + IntToStr(rc) + ').' + #13#10 +
-             'Sind die Spieldateien im Originalzustand? Ggf. bei Steam/GOG die ' +
-             'Dateien überprüfen lassen und erneut versuchen.', mbError, MB_OK);
+             '(Fehlercode ' + IntToStr(rc) + ').' + #13#10#13#10 +
+             'Häufige Ursachen: Das Spiel läuft noch, der Windows-Ransomware-Schutz ' +
+             '("Überwachter Ordnerzugriff") blockiert den Zugriff, oder die Spieldateien ' +
+             'sind nicht im Originalzustand (bei Steam/GOG überprüfen lassen).' + #13#10#13#10 +
+             'Details stehen im Protokoll, das jetzt geöffnet wird. Bitte schicke es ' +
+             'bei Problemen mit:' + #13#10 + logf, mbError, MB_OK);
+      if FileExists(logf) then
+        ShellExec('open', 'notepad.exe', '"' + logf + '"', '', SW_SHOWNORMAL, ewNoWait, dummy);
       Abort();
     end;
   end;

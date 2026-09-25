@@ -12,13 +12,69 @@ game DATs):
     US<->JP switches always start from clean bytes
   * d3d9.dll + sidecars + subtitle + config -> copied from files/
 """
-import sys, os, shutil, re
+import sys, os, shutil, re, hashlib, platform, traceback, datetime
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(BASE, "runtime"))   # bof4lib, apply_patch
 sys.path.insert(0, os.path.join(BASE, "pyembed"))   # bundled bsdiff4
 import bsdiff4                                        # noqa: E402
 from apply_patch import load_patch, apply as applica_patch   # noqa: E402
+
+
+LOG_NAME = "BoF4_DE_Installation.log"
+
+
+class _Tee:
+    """Mirror print() into the log file; the Inno front-end hides the console."""
+    def __init__(self, *streams):
+        self.streams = [st for st in streams if st is not None]
+
+    def write(self, s):
+        for st in self.streams:
+            try:
+                st.write(s); st.flush()
+            except Exception:                                   # noqa: BLE001
+                pass
+
+    def flush(self):
+        pass
+
+
+def _open_log(root):
+    """Log next to the game; fall back to %TEMP% if the game folder is not writable."""
+    for d in (root, os.environ.get("TEMP") or os.getcwd()):
+        try:
+            return open(os.path.join(d, LOG_NAME), "w", encoding="utf-8")
+        except OSError:
+            continue
+    return None
+
+
+def _md5(path):
+    try:
+        h = hashlib.md5()
+        with open(path, "rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                h.update(chunk)
+        return "%s (%d B)" % (h.hexdigest(), os.path.getsize(path))
+    except OSError as e:
+        return "nicht lesbar: %s" % e
+
+
+def _log_env(root, dat):
+    print("Zeit       : %s" % datetime.datetime.now().isoformat(timespec="seconds"))
+    print("Argumente  : %s" % sys.argv[1:])
+    print("Python     : %s / Windows %s" % (platform.python_version(), platform.version()))
+    print("Spielordner: %s" % root)
+    print("DAT-Ordner : %s" % dat)
+    try:
+        print("Frei       : %d MB" % (shutil.disk_usage(root).free // (1 << 20)))
+    except OSError as e:
+        print("Frei       : ? (%s)" % e)
+    exe = os.path.join(os.path.dirname(dat) if dat else root, "BOF4.exe")
+    print("BOF4.exe   : %s" % (_md5(exe) if os.path.exists(exe) else "nicht gefunden"))
+    print("DAT_backup : %s" % ("vorhanden" if dat and os.path.isdir(
+        os.path.join(os.path.dirname(dat), "DAT_backup")) else "neu"))
 
 
 def _dat_dir(root):
@@ -52,6 +108,7 @@ def main():
     jp = (len(sys.argv) > 2 and sys.argv[2].lower() == "jp")
 
     dat = _dat_dir(root)
+    _log_env(root, dat)
     if not dat:
         print("FEHLER: Kein DAT-Ordner im Spielverzeichnis gefunden."); return 1
     exe_dir = os.path.dirname(dat)
@@ -71,6 +128,7 @@ def main():
         src = os.path.join(bak, name)
         if not os.path.exists(src):
             print("  !! %s fehlt im Backup - uebersprungen." % name); continue
+        print("  bsdiff %s <- %s" % (name, _md5(src)))
         try:
             bsdiff4.file_patch(src, os.path.join(dat, name), os.path.join(derived, patch))
         except Exception as e:                                   # noqa: BLE001
@@ -83,7 +141,7 @@ def main():
     _scritti, _sub, _gia, errori = applica_patch(dat, tab, root, os.path.join(root, "_backup_de"))
     if errori:
         print("PROBLEME (%d):" % len(errori))
-        for e in errori[:10]:
+        for e in errori:
             print("  !! " + e)
         return 1
 
@@ -102,8 +160,14 @@ def main():
 
 
 if __name__ == "__main__":
+    log = _open_log(sys.argv[1] if len(sys.argv) > 1 else os.getcwd())
+    sys.stdout = sys.stderr = _Tee(sys.__stdout__, log)
     try:
         rc = main()
-    except Exception as e:                                       # noqa: BLE001
-        print("FEHLER: %s" % e); rc = 1
+    except Exception:                                            # noqa: BLE001
+        print("FEHLER (unerwartet):")
+        print(traceback.format_exc()); rc = 1
+    print("Rueckgabe  : %d" % rc)
+    if log:
+        log.close()
     sys.exit(rc)
